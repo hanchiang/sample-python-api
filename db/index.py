@@ -23,7 +23,11 @@ class Queries:
     
     @staticmethod
     def get_customer_by_id():
-        pass
+        return 'SELECT * FROM customers WHERE id = %s'
+    
+    @staticmethod
+    def delete_customer_by_id():
+        return 'DELETE FROM customers WHERE id = %s'
 
 def connect_db():
     try:
@@ -46,7 +50,7 @@ def return_conn(conn):
     conn_pool.putconn(conn)
 
 def format_result_date(row):
-    new_row = row
+    new_row = dict(row)
     new_row['dob'] = new_row['dob'].strftime('%Y-%m-%d')
     new_row['updated_at'] = new_row['updated_at'].strftime('%Y-%m-%dT%H-%M-%S')
     return new_row
@@ -54,12 +58,12 @@ def format_result_date(row):
 def query(querystring, params = ((),)):
     conn = get_conn()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(querystring, params)
+    print(querystring)
     print(params)
+    cursor.execute(querystring, params)
 
     rows = cursor.fetchall()
     result = [dict(r) for r in rows]
-    print(result)
     result = list(map(lambda row: format_result_date(row), result))
     
     if len(result) == 1:

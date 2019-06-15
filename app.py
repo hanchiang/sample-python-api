@@ -37,8 +37,24 @@ class Customers:
         response.media = result
     def on_post(self, request, response):
         req_body = request.context['body']
-        result = query_mutate(Queries.create_customer(), (req_body['name'], datetime.datetime.strptime(req_body['dob'], '%Y-%m-%d').date()))
+        query_mutate(Queries.create_customer(), (req_body['name'], datetime.datetime.strptime(req_body['dob'], '%Y-%m-%d').date()))
         response.media = 'Created'
+    def on_patch(self, request, response):
+        req_body = request.context['body']
+        id = req_body['id']
+        req_body.pop('id', None)
+
+        set_terms = []
+        for key, value in req_body.items():
+            set_terms.append("{} = '{}'".format(key, value))
+
+        query = 'UPDATE customers SET {} WHERE id = {}'.format(', '.join(set_terms), id)
+        query_mutate(query)
+        response.media = 'Modified'
+    def on_delete(self, request, response):
+        req_body = request.context['body']
+        query_mutate(Queries.delete_customer_by_id(), (req_body['id'],))
+        response.media = 'Deleted'
 
 
 
