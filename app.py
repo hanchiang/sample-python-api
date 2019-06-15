@@ -1,4 +1,5 @@
 import falcon
+from db.index import connect
 
 class HelloWorldResource:
     def on_get(self, request, response):
@@ -6,5 +7,6 @@ class HelloWorldResource:
                           ' Gunicorn running in a container.')
 
 
+connect()
 app = falcon.API()
 app.add_route('/', HelloWorldResource())
